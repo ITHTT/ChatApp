@@ -36,7 +36,6 @@ public class RegisterActivity extends BaseActivity {
     protected void initViews() {
         this.setTitle("注册");
         this.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
     }
 
     @OnClick(R.id.bt_register)

@@ -1,7 +1,7 @@
 package com.tysci.chatapp.utils;
 
-import com.tysci.chatapp.inputprovider.GameBettingInputProvider;
-import com.tysci.chatapp.inputprovider.GameVideoInputProvider;
+import com.tysci.chatapp.provider.GameBettingInputProvider;
+import com.tysci.chatapp.provider.GameVideoInputProvider;
 
 import io.rong.imkit.RongContext;
 import io.rong.imkit.RongIM;
@@ -14,7 +14,6 @@ import io.rong.imlib.model.Conversation;
  * Created by Administrator on 2015/11/13.
  */
 public class RongYunUtils {
-
 
     public static void setInputProvider(){
         InputProvider.ExtendProvider[] provider = {

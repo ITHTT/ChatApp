@@ -3,6 +3,7 @@ package com.tysci.chatapp.fragments;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -45,13 +46,26 @@ public class GameChatRoomFragment extends BaseFragment{
         if(intent!=null){
             targetId = intent.getData().getQueryParameter("targetId");
             targetIds = intent.getData().getQueryParameter("targetIds");
-            //intent.getData().getLastPathSegment();//获得当前会话类型
             mConversationType = Conversation.ConversationType.valueOf(intent.getData().getLastPathSegment().toUpperCase(Locale.getDefault()));
-            conversationFragment=(ConversationFragment)this.getChildFragmentManager().findFragmentById(R.id.conversation);
+
+            //intent.getData().getLastPathSegment();//获得当前会话类型
+//            conversationFragment=(ConversationFragment)this.getActivity().getSupportFragmentManager().findFragmentById(R.id.conversation);
+//            Uri uri = Uri.parse("rong://" + this.getActivity().getApplicationInfo().packageName).buildUpon()
+//                    .appendPath("conversation").appendPath(mConversationType.getName().toLowerCase())
+//                    .appendQueryParameter("targetId", targetId).build();
+//            conversationFragment.setUri(uri);
+
+            ConversationFragment fragment = new ConversationFragment();
             Uri uri = Uri.parse("rong://" + this.getActivity().getApplicationInfo().packageName).buildUpon()
                     .appendPath("conversation").appendPath(mConversationType.getName().toLowerCase())
                     .appendQueryParameter("targetId", targetId).build();
-            conversationFragment.setUri(uri);
+
+            fragment.setUri(uri);
+
+            FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+            //xxx 为你要加载的 id
+            transaction.add(R.id.layout_chat, fragment);
+            transaction.commit();
 
             layoutTop.setOnTouchListener(new View.OnTouchListener() {
                 @Override

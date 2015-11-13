@@ -39,7 +39,8 @@
                     android:layout_marginLeft="@dimen/space_5"
                     android:paddingTop="12.0dip"
                     android:paddingBottom="12.0dip"
-                    android:inputType="textEmailAddress"/>
+                    android:inputType="textEmailAddress"
+                    android:singleLine="true"/>
             </LinearLayout>
             <View
                 android:layout_width="fill_parent"
@@ -70,7 +71,8 @@
                     android:layout_marginLeft="@dimen/space_5"
                     android:paddingTop="12.0dip"
                     android:paddingBottom="12.0dip"
-                    android:inputType="textPassword"/>
+                    android:inputType="textPassword"
+                    android:singleLine="true"/>
             </LinearLayout>
             <View
                 android:layout_width="fill_parent"
@@ -101,7 +103,8 @@
                     android:layout_marginLeft="@dimen/space_5"
                     android:paddingTop="12.0dip"
                     android:paddingBottom="12.0dip"
-                    android:inputType="textPassword"/>
+                    android:inputType="textPassword"
+                    android:singleLine="true"/>
             </LinearLayout>
         </LinearLayout>
         <Button

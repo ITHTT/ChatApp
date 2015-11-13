@@ -1,12 +1,14 @@
-package com.tysci.chatapp.inputprovider;
+package com.tysci.chatapp.provider;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
 import com.tysci.chatapp.activitys.R;
+import com.tysci.chatapp.utils.ToastUtil;
 
 import io.rong.imkit.RongContext;
+import io.rong.imkit.widget.InputView;
 import io.rong.imkit.widget.provider.InputProvider;
 
 /**
@@ -31,7 +33,11 @@ public class GameBettingInputProvider extends InputProvider.ExtendProvider{
 
     @Override
     public void onPluginClick(View view) {
-
+        ToastUtil.toastMsg(getContext(),"点击投注");
+        InputView inputView=getInputView();
+        inputView.clearFocus();
     }
+
+
 
 }

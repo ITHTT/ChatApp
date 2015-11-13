@@ -57,11 +57,10 @@ public class AppConfigInfo {
             httpCacheDir.mkdirs();
         }
         APP_HTTP_CACHE_PATH=httpCacheDir.getAbsolutePath();
-
     }
 
-
-
-
+    public static String getAppException(){
+        return APP_LOG_PATH+File.separator+System.currentTimeMillis()+".log";
+    }
 
 }

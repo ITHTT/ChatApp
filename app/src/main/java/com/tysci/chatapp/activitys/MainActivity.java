@@ -76,6 +76,7 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
         tabLayout.setupWithViewPager(viewPager);
         viewPager.setOnPageChangeListener(this);
         viewPager.isNoScroll(true);
+        viewPager.setOffscreenPageLimit(3);
 
     }
 

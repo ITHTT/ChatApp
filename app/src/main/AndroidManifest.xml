@@ -93,6 +93,7 @@
                 <action android:name="io.rong.push" />
             </intent-filter>
         </service>
+
         <service
             android:name="io.rong.push.CommandService"
             android:process="io.rong.push"> <!-- Waring: The name of the push process can't be changed!!! -->

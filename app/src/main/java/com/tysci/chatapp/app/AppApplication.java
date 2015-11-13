@@ -8,6 +8,7 @@ import com.tysci.applibrary.networks.HttpClientUtil;
 
 import io.rong.imkit.RongIM;
 import io.rong.imlib.ipc.RongExceptionHandler;
+import io.rong.message.ImageMessage;
 
 /**
  * Created by Administrator on 2015/11/11.
@@ -17,6 +18,8 @@ public class AppApplication extends BaseApplication{
     @Override
     public void onCreate() {
         super.onCreate();
+        AppExceptionHandler appExceptionHandler=AppExceptionHandler.getInstance();
+        appExceptionHandler.init(this);
         AppConfigInfo.initAppConfigInfo(this);
         HttpClientUtil.initHttpClient(this,AppConfigInfo.APP_HTTP_CACHE_PATH);
         initIMKit();
@@ -51,6 +54,7 @@ public class AppApplication extends BaseApplication{
                     //RongIM.registerMessageType(DeAgreedFriendRequestMessage.class);
                     //RongIM.registerMessageTemplate(new ContactNotificationMessageProvider());
                     //RongIM.registerMessageTemplate(new RealTimeLocationMessageProvider());
+                    RongIM.registerMessageType(ImageMessage.class);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
