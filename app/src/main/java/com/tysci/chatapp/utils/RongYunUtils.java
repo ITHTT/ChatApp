@@ -1,5 +1,8 @@
 package com.tysci.chatapp.utils;
 
+import com.tysci.chatapp.messages.CustomConnectionStatusListener;
+import com.tysci.chatapp.messages.CustomReceiveMessageListener;
+import com.tysci.chatapp.messages.CustomSendMessageListener;
 import com.tysci.chatapp.provider.GameBettingInputProvider;
 import com.tysci.chatapp.provider.GameVideoInputProvider;
 
@@ -23,5 +26,17 @@ public class RongYunUtils {
                 new GameVideoInputProvider(RongContext.getInstance())
         };
         RongIM.getInstance().resetInputExtensionProvider(Conversation.ConversationType.CHATROOM, provider);
+    }
+
+    public static void setSendMessageListener(CustomSendMessageListener listener){
+        RongIM.getInstance().setSendMessageListener(listener);
+    }
+
+    public static void setOnReceiveMessageListener(CustomReceiveMessageListener listener){
+        RongIM.setOnReceiveMessageListener(listener);
+    }
+
+    public static void setConnectionStatusListener(CustomConnectionStatusListener listener){
+        RongIM.getInstance().getRongIMClient().setConnectionStatusListener(listener);
     }
 }

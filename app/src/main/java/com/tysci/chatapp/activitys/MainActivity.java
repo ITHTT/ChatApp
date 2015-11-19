@@ -55,7 +55,6 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
 
     @Override
     protected void setRootContentView() {
-        RongYunUtils.setInputProvider();
         setContentView(R.layout.activity_main);
     }
 

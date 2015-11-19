@@ -59,7 +59,6 @@ public class GameChatRoomFragment extends BaseFragment{
             Uri uri = Uri.parse("rong://" + this.getActivity().getApplicationInfo().packageName).buildUpon()
                     .appendPath("conversation").appendPath(mConversationType.getName().toLowerCase())
                     .appendQueryParameter("targetId", targetId).build();
-
             fragment.setUri(uri);
 
             FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();

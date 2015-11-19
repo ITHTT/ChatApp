@@ -18,8 +18,11 @@ import com.tysci.applibrary.networks.HttpResponseHandler;
 import com.tysci.applibrary.utils.ActivitySkipUtils;
 import com.tysci.chatapp.app.AppApplication;
 import com.tysci.chatapp.app.AppConfigInfo;
+import com.tysci.chatapp.messages.CustomConnectionStatusListener;
+import com.tysci.chatapp.messages.CustomSendMessageListener;
 import com.tysci.chatapp.networks.HttpClientApi;
 import com.tysci.chatapp.networks.HttpUrls;
+import com.tysci.chatapp.utils.RongYunUtils;
 import com.tysci.chatapp.utils.SharedPreferencesUtils;
 import com.tysci.chatapp.utils.ToastUtil;
 
@@ -54,12 +57,24 @@ public class LoginActivity extends BaseActivity{
             switch(msg.what){
                 case TOKEN_CORRECT:
                     //ActivitySkipUtils.skipActivity(LoginActivity.this,MainActivity.class);
-                    RongIM.getInstance().startConversation(LoginActivity.this, Conversation.ConversationType.CHATROOM, "1000", "球聊");
+                    /**设置输入扩展框的内容项*/
+                    RongYunUtils.setInputProvider();
+                    /**设置消息发送监听事件*/
+                    RongYunUtils.setSendMessageListener(new CustomSendMessageListener());
+                    /**设置连接状态的监听事件*/
+                    RongYunUtils.setConnectionStatusListener(new CustomConnectionStatusListener());
+
+                    String targId="1000";
+                    if(HttpClientApi.IS_LOCAL){
+                        targId="A9CFDF1705674BB88BB1E3D0DDCE05D3";
+                    }
+                    RongIM.getInstance().startConversation(LoginActivity.this, Conversation.ConversationType.CHATROOM, targId, "球聊");
                     finish();
                     break;
                 case TOKEN_INCORRECT:
                     ToastUtil.toastMsg(LoginActivity.this,"获取的Token不正确");
                     SharedPreferencesUtils.setStringByKey(LoginActivity.this, AppConfigInfo.COOKIE_KEY, null);
+                    SharedPreferencesUtils.setStringByKey(LoginActivity.this,AppConfigInfo.TOKEN_KEY,null);
                     break;
                 case TOKEN_ERROR:
                     ToastUtil.toastMsg(LoginActivity.this,"获取Token错误");
@@ -71,7 +86,6 @@ public class LoginActivity extends BaseActivity{
     @Override
     protected void setRootContentView() {
         this.setContentView(R.layout.activity_login);
-
     }
 
     @Override
@@ -104,67 +118,76 @@ public class LoginActivity extends BaseActivity{
             return;
         }
 
-
         if(progressDialog==null){
             progressDialog=new ProgressDialog(this);
             progressDialog.setMessage("登录中....");
             progressDialog.setCanceledOnTouchOutside(false);
         }
         progressDialog.show();
-        boolean isLogin=false;
-        String userName=SharedPreferencesUtils.getStringByKey(this,AppConfigInfo.USER_ACCOUNT);
-        String userPassword=SharedPreferencesUtils.getStringByKey(this,AppConfigInfo.USER_PASSWORD);
-        if(userName!=null&&userName.equals(account)&&userPassword!=null&&userPassword.equals(password)){
-            String cookie=SharedPreferencesUtils.getStringByKey(this,AppConfigInfo.COOKIE_KEY);
+        if(HttpClientApi.IS_LOCAL){
             String token=SharedPreferencesUtils.getStringByKey(this,AppConfigInfo.TOKEN_KEY);
-            if(!TextUtils.isEmpty(cookie)&&!TextUtils.isEmpty(token)){
+            if(TextUtils.isEmpty(token)){
+                getLocalToken(account);
+            }else{
                 connect(token);
-            }else if(TextUtils.isEmpty(token)){
-                getToken(cookie);
-            }else if(TextUtils.isEmpty(cookie)){
-                isLogin=true;
             }
         }else{
-            isLogin=true;
-        }
-       if(isLogin){
-           System.out.println("account:" + account);
-           HttpClientApi.login(account, password, new HttpResponseHandler() {
-               @Override
-               public void onSuccess(String response) {
-                   System.out.println("响应数据:" + response);
-                   if (!TextUtils.isEmpty(response)) {
-                       JSONObject json = JSON.parseObject(response);
-                       if (json != null && !json.isEmpty()) {
-                           String cookie = json.getString("cookie");
-                           if (!TextUtils.isEmpty(cookie)) {
-                               SharedPreferencesUtils.setStringByKey(LoginActivity.this, AppConfigInfo.COOKIE_KEY, cookie);
-                               SharedPreferencesUtils.setStringByKey(LoginActivity.this, AppConfigInfo.USER_ACCOUNT, account);
-                               SharedPreferencesUtils.setStringByKey(LoginActivity.this, AppConfigInfo.USER_PASSWORD, password);
-                               getToken(cookie);
-                               return;
-                           }
-                       }
-                   }
-                   progressDialog.dismiss();
-                   ToastUtil.toastMsg(LoginActivity.this, "登录失败");
-               }
+            boolean isLogin=false;
+            String userName=SharedPreferencesUtils.getStringByKey(this,AppConfigInfo.USER_ACCOUNT);
+            String userPassword=SharedPreferencesUtils.getStringByKey(this,AppConfigInfo.USER_PASSWORD);
+            if(userName!=null&&userName.equals(account)&&userPassword!=null&&userPassword.equals(password)){
+                String cookie=SharedPreferencesUtils.getStringByKey(this,AppConfigInfo.COOKIE_KEY);
+                String token=SharedPreferencesUtils.getStringByKey(this,AppConfigInfo.TOKEN_KEY);
+                if(!TextUtils.isEmpty(cookie)&&!TextUtils.isEmpty(token)){
+                    connect(token);
+                }else if(TextUtils.isEmpty(token)&&!TextUtils.isEmpty(cookie)){
+                    getToken(cookie);
+                }else if(TextUtils.isEmpty(cookie)){
+                    isLogin=true;
+                }
+            }else{
+                isLogin=true;
+            }
+            if(isLogin){
+                System.out.println("account:" + account);
+                HttpClientApi.login(account, password, new HttpResponseHandler() {
+                    @Override
+                    public void onSuccess(String response) {
+                        System.out.println("响应数据:" + response);
+                        if (!TextUtils.isEmpty(response)) {
+                            JSONObject json = JSON.parseObject(response);
+                            if (json != null && !json.isEmpty()) {
+                                String cookie = json.getString("cookie");
+                                if (!TextUtils.isEmpty(cookie)) {
+                                    SharedPreferencesUtils.setStringByKey(LoginActivity.this, AppConfigInfo.COOKIE_KEY, cookie);
+                                    SharedPreferencesUtils.setStringByKey(LoginActivity.this, AppConfigInfo.USER_ACCOUNT, account);
+                                    SharedPreferencesUtils.setStringByKey(LoginActivity.this, AppConfigInfo.USER_PASSWORD, password);
+                                    getToken(cookie);
+                                    return;
+                                }
+                            }
+                        }
+                        progressDialog.dismiss();
+                        ToastUtil.toastMsg(LoginActivity.this, "登录失败");
+                    }
 
-               @Override
-               public void onFail(VolleyError volleyError) {
-                   progressDialog.dismiss();
-                   if (volleyError != null) {
-                       System.out.println("volleyError:" + volleyError);
-                   }
-                   ToastUtil.toastMsg(LoginActivity.this, "登录失败");
-               }
-           });
-       }
+                    @Override
+                    public void onFail(VolleyError volleyError) {
+                        progressDialog.dismiss();
+                        if (volleyError != null) {
+                            System.out.println("volleyError:" + volleyError);
+                        }
+                        ToastUtil.toastMsg(LoginActivity.this, "登录失败");
+                    }
+                });
+            }
+        }
+
     }
 
     @OnClick(R.id.tv_register)
     protected void gotoRegister(){
-        ActivitySkipUtils.skipActivityForResult(this,RegisterActivity.class,AppConfigInfo.REQUEST_CODE_USER_REGISTER,null);
+        ActivitySkipUtils.skipActivityForResult(this, RegisterActivity.class, AppConfigInfo.REQUEST_CODE_USER_REGISTER, null);
     }
 
     protected void getToken(String cookie){
@@ -180,7 +203,7 @@ public class LoginActivity extends BaseActivity{
                         if (tokenJson != null) {
                             String token = tokenJson.getString("token");
                             if (!TextUtils.isEmpty(token)) {
-                                SharedPreferencesUtils.setStringByKey(LoginActivity.this,AppConfigInfo.TOKEN_KEY,token);
+                                SharedPreferencesUtils.setStringByKey(LoginActivity.this, AppConfigInfo.TOKEN_KEY, token);
                                 connect(token);
                                 return;
                             }
@@ -195,10 +218,47 @@ public class LoginActivity extends BaseActivity{
             public void onFail(VolleyError volleyError) {
                 progressDialog.dismiss();
                 ToastUtil.toastMsg(LoginActivity.this, "获取Token失败");
-                SharedPreferencesUtils.setStringByKey(LoginActivity.this,AppConfigInfo.COOKIE_KEY,null);
+                SharedPreferencesUtils.setStringByKey(LoginActivity.this, AppConfigInfo.COOKIE_KEY, null);
 
             }
         });
+    }
+
+    protected void getLocalToken(String userName){
+        HttpClientApi.getLocalToken(userName,new HttpResponseHandler() {
+
+            @Override
+            public void onSuccess(String response) {
+                System.out.println("获取的响应数据:" + response);
+                progressDialog.dismiss();
+                JSONObject jsonObject=JSON.parseObject(response);
+                String token = getTokenFromJosn(jsonObject);
+                if (!TextUtils.isEmpty(token)){
+                    connect(token);
+                    SharedPreferencesUtils.setStringByKey(LoginActivity.this, AppConfigInfo.COOKIE_KEY, token);
+                    return;
+                }
+                ToastUtil.toastMsg(LoginActivity.this, "获取Token失败");
+            }
+
+            @Override
+            public void onFail(VolleyError volleyError) {
+                progressDialog.dismiss();
+                ToastUtil.toastMsg(LoginActivity.this, "获取Token失败");
+                SharedPreferencesUtils.setStringByKey(LoginActivity.this, AppConfigInfo.COOKIE_KEY, null);
+            }
+        });
+
+    }
+
+    private String getTokenFromJosn(JSONObject jsonObject){
+        if(jsonObject!=null&&!jsonObject.isEmpty()){
+            JSONObject obj=jsonObject.getJSONObject("map");
+            if(obj!=null&&!obj.isEmpty()){
+               return obj.getString("token");
+            }
+        }
+        return null;
     }
 
     /**

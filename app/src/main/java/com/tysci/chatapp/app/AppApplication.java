@@ -5,8 +5,15 @@ import android.content.Context;
 
 import com.tysci.applibrary.app.BaseApplication;
 import com.tysci.applibrary.networks.HttpClientUtil;
+import com.tysci.chatapp.messages.CustomReceiveMessageListener;
+import com.tysci.chatapp.messages.MideaVideoMessage;
+import com.tysci.chatapp.messages.VideoMessage;
+import com.tysci.chatapp.provider.MideaVideoMessageItemProvider;
+import com.tysci.chatapp.provider.VideoMessageItemProvider;
+import com.tysci.chatapp.utils.RongYunUtils;
 
 import io.rong.imkit.RongIM;
+import io.rong.imkit.widget.provider.ImageMessageItemProvider;
 import io.rong.imlib.ipc.RongExceptionHandler;
 import io.rong.message.ImageMessage;
 
@@ -18,8 +25,8 @@ public class AppApplication extends BaseApplication{
     @Override
     public void onCreate() {
         super.onCreate();
-        AppExceptionHandler appExceptionHandler=AppExceptionHandler.getInstance();
-        appExceptionHandler.init(this);
+        //AppExceptionHandler appExceptionHandler=AppExceptionHandler.getInstance();
+        //appExceptionHandler.init(this);
         AppConfigInfo.initAppConfigInfo(this);
         HttpClientUtil.initHttpClient(this,AppConfigInfo.APP_HTTP_CACHE_PATH);
         initIMKit();
@@ -47,14 +54,13 @@ public class AppApplication extends BaseApplication{
              */
             if (getApplicationInfo().packageName.equals(getCurProcessName(getApplicationContext()))) {
 
-                //DemoContext.init(this);
-
-                Thread.setDefaultUncaughtExceptionHandler(new RongExceptionHandler(this));
+                //Thread.setDefaultUncaughtExceptionHandler(new RongExceptionHandler(this));
                 try {
-                    //RongIM.registerMessageType(DeAgreedFriendRequestMessage.class);
-                    //RongIM.registerMessageTemplate(new ContactNotificationMessageProvider());
-                    //RongIM.registerMessageTemplate(new RealTimeLocationMessageProvider());
-                    RongIM.registerMessageType(ImageMessage.class);
+                    RongYunUtils.setOnReceiveMessageListener(new CustomReceiveMessageListener());
+                    RongIM.registerMessageType(VideoMessage.class);
+                    RongIM.registerMessageTemplate(new VideoMessageItemProvider());
+                    RongIM.registerMessageType(MideaVideoMessage.class);
+                    RongIM.registerMessageTemplate(new MideaVideoMessageItemProvider());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

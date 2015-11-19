@@ -18,6 +18,11 @@ public class AppConfigInfo {
     public static String APP_DATABASE_PATH=null;
     public static final String APP_LOG_DIR_NAME="log";
     public static String APP_LOG_PATH=null;
+    public static final String APP_IMAGE_DIR_NAME="image";
+    public static String APP_IMAGE_PATH=null;
+
+    public static final String APP_VIDEO_DIR_NAME="videos";
+    public static String APP_VIDEO_PATH=null;
 
     public static String COOKIE_KEY="cookie_key";
     public static String TOKEN_KEY="token_key";
@@ -57,10 +62,43 @@ public class AppConfigInfo {
             httpCacheDir.mkdirs();
         }
         APP_HTTP_CACHE_PATH=httpCacheDir.getAbsolutePath();
+
+        File imageDir=new File(APP_PATH+File.separator+APP_IMAGE_DIR_NAME);
+        if(!imageDir.exists()){
+            imageDir.mkdirs();
+        }
+        APP_IMAGE_PATH=imageDir.getAbsolutePath();
+
+        File videoDir=new File(APP_PATH+File.separator+APP_VIDEO_DIR_NAME);
+        if(!videoDir.exists()){
+            videoDir.mkdirs();
+        }
+        APP_VIDEO_PATH=videoDir.getAbsolutePath();
     }
 
     public static String getAppException(){
         return APP_LOG_PATH+File.separator+System.currentTimeMillis()+".log";
+    }
+
+    public static String getImagePath(){
+        return APP_IMAGE_PATH+File.separator+System.currentTimeMillis()+".jpg";
+    }
+
+    public static String getVideoPath(String name){
+        return APP_VIDEO_PATH+File.separator+name+".mp4";
+    }
+
+    public static boolean isExistFile(String fileName){
+        File fileDir=new File(APP_VIDEO_PATH);
+        if(fileDir.exists()){
+            String[] fileNames=fileDir.list();
+            for(int i=0;i<fileNames.length;i++){
+                if(fileNames[i].equals(fileName)){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
 }
