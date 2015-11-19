@@ -17,11 +17,11 @@ import okio.Sink;
  */
 public class ProgressRequestBody extends RequestBody{
     protected RequestBody delegate;
-    protected Listener listener;
+    protected ProgressListener listener;
 
     protected ProgressSink countingSink;
 
-    public ProgressRequestBody(RequestBody delegate, Listener listener)
+    public ProgressRequestBody(RequestBody delegate, ProgressListener listener)
     {
         this.delegate = delegate;
         this.listener = listener;
@@ -80,7 +80,7 @@ public class ProgressRequestBody extends RequestBody{
 
     }
 
-    public static interface Listener
+    public static interface ProgressListener
     {
 
         public void onRequestProgress(long bytesWritten, long contentLength);
